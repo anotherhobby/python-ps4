@@ -74,10 +74,14 @@ def _send_recv_msg(host, broadcast, msg, receive=True):
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         host = '255.255.255.255'
 
-    sock.sendto(msg.encode('utf-8'), (host, DDP_PORT))
-
-    if receive:
-        return sock.recvfrom(1024)
+    for n in range(10):
+        try:
+            sock.sendto(msg.encode('utf-8'), (host, DDP_PORT))
+            if receive:
+                return sock.recvfrom(1024)
+        except Exception:
+            continue
+        break
 
 
 def _send_msg(host, broadcast, msg):
